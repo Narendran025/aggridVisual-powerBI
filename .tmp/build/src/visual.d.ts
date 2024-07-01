@@ -12,13 +12,10 @@ export interface ISelectionIdBuilder {
 }
 export declare class Visual implements IVisual {
     private target;
-    private updateState;
     private visualSettings;
     private formattingSettingsService;
-    private Theme;
     private selectionManager;
     private host;
-    private state;
     constructor(options: VisualConstructorOptions);
     update(options: VisualUpdateOptions): void;
     getFormattingModel(): powerbi.visuals.FormattingModel;

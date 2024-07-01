@@ -50,37 +50,16 @@ export interface ISelectionIdBuilder {
 
 export class Visual implements IVisual {
     private target: HTMLElement;
-    private updateState: (newState: State) => void;
     private visualSettings: VisualSettings; 
     private formattingSettingsService : FormattingSettingsService;
-    private Theme : ThemeData;
     private selectionManager;
     private host : IVisualHost;
-    
-    private state: State = {
-        data: [],
-        columns: []
-    }
+
     constructor(options: VisualConstructorOptions) {
         this.host = options.host;
         this.formattingSettingsService = new FormattingSettingsService();
         this.selectionManager = this.host.createSelectionManager();
-        this.updateState = () => {
-            this.state = {
-                data: [],
-                columns: []
-            }
-        };
         this.target = options.element;
-
-        // const reactRoot = React.createElement(AgGrid, {
-        //     updateCallback: (updateFunc : (newState : State)=> void)=>{
-        //         this.updateState = updateFunc;
-        //     }
-        // });
-
-        // const root = createRoot(this.target);
-        // root.render(reactRoot);
         Starter(this.target);
         
     }

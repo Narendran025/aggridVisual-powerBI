@@ -10,9 +10,9 @@ var aggridVisual54BAEA70B7A94369A8E345F1924C5E39_DEBUG;
 /* harmony export */   Kx: () => (/* binding */ Model),
 /* harmony export */   St: () => (/* binding */ CompositeCard),
 /* harmony export */   Tn: () => (/* binding */ SimpleCard),
-/* harmony export */   sk: () => (/* binding */ ColorPicker)
+/* harmony export */   uI: () => (/* binding */ ReadOnlyText)
 /* harmony export */ });
-/* unused harmony exports CardGroupEntity, Group, SimpleSlice, AlignmentGroup, ToggleSwitch, NumUpDown, Slider, DatePicker, ItemDropdown, AutoDropdown, DurationPicker, ErrorRangeControl, FieldPicker, ItemFlagsSelection, AutoFlagsSelection, TextInput, TextArea, FontPicker, GradientBar, ImageUpload, ListEditor, ReadOnlyText, ShapeMapSelector, CompositeSlice, FontControl, MarginPadding, Container, ContainerItem */
+/* unused harmony exports CardGroupEntity, Group, SimpleSlice, AlignmentGroup, ToggleSwitch, ColorPicker, NumUpDown, Slider, DatePicker, ItemDropdown, AutoDropdown, DurationPicker, ErrorRangeControl, FieldPicker, ItemFlagsSelection, AutoFlagsSelection, TextInput, TextArea, FontPicker, GradientBar, ImageUpload, ListEditor, ShapeMapSelector, CompositeSlice, FontControl, MarginPadding, Container, ContainerItem */
 /* harmony import */ var _utils_FormattingSettingsUtils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(639);
 /**
  * Powerbi utils components classes for custom visual formatting pane objects
@@ -1126,23 +1126,41 @@ const AgGrid = ({ onRowClick, dataView, viewport, scaling }) => {
 const Component = ({ onRowClick, host, dataView, viewPort, visualSetting }) => {
     const [theme, setTheme] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
     const [background, setBackground] = react__WEBPACK_IMPORTED_MODULE_0__.useState({
-        background: '#ffffff', color: '#ffffff'
+        background: '#ffffff', color: '#000000'
     });
     const [scaling, setScaling] = react__WEBPACK_IMPORTED_MODULE_0__.useState('normal');
     react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
         if (theme) {
-            visualSetting.grid.theme.value.value = '#000000';
-            visualSetting.grid.color.value.value = '#ffffff';
+            persistValues('dark');
         }
         else {
-            visualSetting.grid.theme.value.value = '#ffffff';
-            visualSetting.grid.color.value.value = '#000000';
+            persistValues('light');
         }
-        setBackground({
-            background: visualSetting.grid.theme.value.value,
-            color: visualSetting.grid.color.value.value
-        });
-    }, [theme, viewPort]);
+        if (dataView?.metadata?.objects?.grid?.theme === 'light') {
+            setBackground({
+                background: "#ffffff",
+                color: "#000000"
+            });
+        }
+        else {
+            setBackground({
+                background: "#000000",
+                color: "#ffffff"
+            });
+        }
+    }, [theme]);
+    const persistValues = (theme) => {
+        const persistedObjects = {
+            merge: [{
+                    objectName: 'grid',
+                    properties: {
+                        theme: theme
+                    },
+                    selector: null
+                }]
+        };
+        host.persistProperties(persistedObjects);
+    };
     const handleClick = () => {
         setTheme(prev => !prev);
     };
@@ -1150,6 +1168,7 @@ const Component = ({ onRowClick, host, dataView, viewPort, visualSetting }) => {
         event.preventDefault();
         setScaling(event.target.value);
     };
+    console.log();
     return (react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { backgroundColor: background.background, color: background.color, padding: '40px' } },
         react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", { style: { margin: '20px' } },
             react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", { style: { all: 'unset', padding: '5px', border: `1px solid ${background.color}`, borderRadius: '5px' }, onClick: handleClick }, "Change Theme"),
@@ -1229,17 +1248,22 @@ const Starter = (targetElement) => {
 var FormattingSettingsCard = powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .formattingSettings.SimpleCard */ .z.Tn;
 var FormattingSettingsModel = powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .formattingSettings.Model */ .z.Kx;
 class GridSettings extends FormattingSettingsCard {
-    theme = new powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .formattingSettings.ColorPicker */ .z.sk({
-        name: "theme",
-        displayName: "Theme",
-        value: { value: "#ffffff" },
-        visible: false
-    });
-    color = new powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .formattingSettings.ColorPicker */ .z.sk({
-        name: 'color',
-        displayName: 'Font Color',
-        value: { value: '#ffffff' },
-        visible: false
+    // public theme = new formattingSettings.ColorPicker({
+    //     name: "theme",
+    //     displayName: "Theme",
+    //     value: { value: "#ffffff" },
+    //     visible: false
+    // });
+    // public color = new formattingSettings.ColorPicker({
+    //     name: 'color',
+    //     displayName : 'Font Color',
+    //     value: { value : '#000000'},
+    //     visible: false
+    // })
+    theme = new powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .formattingSettings.ReadOnlyText */ .z.uI({
+        name: 'theme',
+        displayName: 'Theme',
+        value: 'light'
     });
     name = "grid";
     displayName = "Table View";
@@ -1297,34 +1321,15 @@ class VisualSettings extends FormattingSettingsModel {
 
 class Visual {
     target;
-    updateState;
     visualSettings;
     formattingSettingsService;
-    Theme;
     selectionManager;
     host;
-    state = {
-        data: [],
-        columns: []
-    };
     constructor(options) {
         this.host = options.host;
         this.formattingSettingsService = new powerbi_visuals_utils_formattingmodel__WEBPACK_IMPORTED_MODULE_0__/* .FormattingSettingsService */ .O();
         this.selectionManager = this.host.createSelectionManager();
-        this.updateState = () => {
-            this.state = {
-                data: [],
-                columns: []
-            };
-        };
         this.target = options.element;
-        // const reactRoot = React.createElement(AgGrid, {
-        //     updateCallback: (updateFunc : (newState : State)=> void)=>{
-        //         this.updateState = updateFunc;
-        //     }
-        // });
-        // const root = createRoot(this.target);
-        // root.render(reactRoot);
         (0,_component_Starter__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A)(this.target);
     }
     update(options) {

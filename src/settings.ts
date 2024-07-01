@@ -33,18 +33,24 @@ import FormattingSettingsSlice = formattingSettings.Slice;
 import FormattingSettingsModel = formattingSettings.Model;
 
 export class GridSettings extends FormattingSettingsCard{
-    public theme = new formattingSettings.ColorPicker({
-        name: "theme",
-        displayName: "Theme",
-        value: { value: "#ffffff" },
-        visible: false
-    });
+    // public theme = new formattingSettings.ColorPicker({
+    //     name: "theme",
+    //     displayName: "Theme",
+    //     value: { value: "#ffffff" },
+    //     visible: false
+    // });
 
-    public color = new formattingSettings.ColorPicker({
-        name: 'color',
-        displayName : 'Font Color',
-        value: { value : '#ffffff'},
-        visible: false
+    // public color = new formattingSettings.ColorPicker({
+    //     name: 'color',
+    //     displayName : 'Font Color',
+    //     value: { value : '#000000'},
+    //     visible: false
+    // })
+
+    public theme = new formattingSettings.ReadOnlyText({
+        name: 'theme',
+        displayName: 'Theme',
+        value: 'light'
     })
 
 

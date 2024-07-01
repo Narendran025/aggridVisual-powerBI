@@ -10,40 +10,58 @@ type PropType = {
 const Component = ({onRowClick, host, dataView, viewPort, visualSetting} : PropType) =>{
     const [theme, setTheme] = React.useState(false);
     const [background, setBackground] = React.useState({
-        background : '#ffffff', color: '#ffffff'
+        background : '#ffffff', color: '#000000'
     })
     const [scaling, setScaling] = React.useState('normal');
-    
-    
+        
 
     React.useEffect(()=>{
-
         if(theme){
-            visualSetting.grid.theme.value.value = '#000000';
-            visualSetting.grid.color.value.value = '#ffffff';
+            persistValues('dark')
         }else{
-            visualSetting.grid.theme.value.value = '#ffffff';
-            visualSetting.grid.color.value.value = '#000000';
+            persistValues('light')
         }
 
-        setBackground({
-            background : visualSetting.grid.theme.value.value,
-            color : visualSetting.grid.color.value.value
-        });
-        
-    }, [theme, viewPort])
-        
+        if(dataView?.metadata?.objects?.grid?.theme === 'light'){
+            setBackground({
+                background : "#ffffff",
+                color : "#000000"
+            });
+        }else{
+            setBackground({
+                background : "#000000",
+                color : "#ffffff"
+            });
+        }
+    }, [theme])
 
+    const persistValues = (theme)=>{
+        const persistedObjects = {
+            merge: [{
+                objectName: 'grid',
+                properties: {
+                    theme: theme
+                },
+                selector: null
+            }]
+        };
+        host.persistProperties(persistedObjects);
+    }
+    
+    
     const handleClick = () =>{
         setTheme(prev=>!prev);
+        
     }
-
+    
+    
     const handleSelect = (event)=>{
         event.preventDefault();
         setScaling(event.target.value);
         
     }
 
+    console.log();
     return (
         <div style={{backgroundColor: background.background, color: background.color, padding: '40px'}}>
             <div style={{margin: '20px'}}>

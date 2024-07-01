@@ -3,8 +3,7 @@ import FormattingSettingsCard = formattingSettings.SimpleCard;
 import FormattingSettingsSlice = formattingSettings.Slice;
 import FormattingSettingsModel = formattingSettings.Model;
 export declare class GridSettings extends FormattingSettingsCard {
-    theme: formattingSettings.ColorPicker;
-    color: formattingSettings.ColorPicker;
+    theme: formattingSettings.ReadOnlyText;
     name: string;
     displayName: string;
     visible: boolean;
