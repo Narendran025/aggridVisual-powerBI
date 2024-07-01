@@ -33,6 +33,20 @@
         }
     ],
     "objects": {
+        "grid": {
+            "properties": {
+                "theme": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
-    "privileges": []
+    "privileges": [],
+    "supportsMultiVisualSelection": true
 }

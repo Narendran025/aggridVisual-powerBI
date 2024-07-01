@@ -24,7 +24,7 @@
  *  THE SOFTWARE.
  */
 
-"use strict";
+// "use strict";
 
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
@@ -32,52 +32,29 @@ import FormattingSettingsCard = formattingSettings.SimpleCard;
 import FormattingSettingsSlice = formattingSettings.Slice;
 import FormattingSettingsModel = formattingSettings.Model;
 
-/**
- * Data Point Formatting Card
- */
-class DataPointCardSettings extends FormattingSettingsCard {
-    defaultColor = new formattingSettings.ColorPicker({
-        name: "defaultColor",
-        displayName: "Default color",
-        value: { value: "" }
+export class GridSettings extends FormattingSettingsCard{
+    public theme = new formattingSettings.ColorPicker({
+        name: "theme",
+        displayName: "Theme",
+        value: { value: "#ffffff" },
+        visible: false
     });
 
-    showAllDataPoints = new formattingSettings.ToggleSwitch({
-        name: "showAllDataPoints",
-        displayName: "Show all",
-        value: true
-    });
+    public color = new formattingSettings.ColorPicker({
+        name: 'color',
+        displayName : 'Font Color',
+        value: { value : '#ffffff'},
+        visible: false
+    })
 
-    fill = new formattingSettings.ColorPicker({
-        name: "fill",
-        displayName: "Fill",
-        value: { value: "" }
-    });
 
-    fillRule = new formattingSettings.ColorPicker({
-        name: "fillRule",
-        displayName: "Color saturation",
-        value: { value: "" }
-    });
-
-    fontSize = new formattingSettings.NumUpDown({
-        name: "fontSize",
-        displayName: "Text Size",
-        value: 12
-    });
-
-    name: string = "dataPoint";
-    displayName: string = "Data colors";
-    slices: Array<FormattingSettingsSlice> = [this.defaultColor, this.showAllDataPoints, this.fill, this.fillRule, this.fontSize];
+    public name: string = "grid";
+    public displayName: string = "Table View";
+    public visible: boolean = false;
+    public slices: FormattingSettingsSlice[] = [this.theme]
 }
 
-/**
-* visual settings model class
-*
-*/
-export class VisualFormattingSettingsModel extends FormattingSettingsModel {
-    // Create formatting settings model formatting cards
-    dataPointCard = new DataPointCardSettings();
-
-    cards = [this.dataPointCard];
+export class VisualSettings extends FormattingSettingsModel {
+    public grid: GridSettings = new GridSettings();
+    public cards: FormattingSettingsCard[] = [this.grid];
 }

@@ -8809,5 +8809,22 @@ input[class^=ag-][type=range]:disabled {
   opacity: 0.8;
 }
 
+#customers {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+#customers td,
+#customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+}
+
 
 /*# sourceMappingURL=https://localhost:8080/assets/visual.css.map*/

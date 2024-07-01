@@ -26,27 +26,45 @@
 
 "use strict";
 import powerbi from "powerbi-visuals-api";
-
+import ISelectionId = powerbi.visuals.ISelectionId;
 import DataView = powerbi.DataView;
+import DataViewTable = powerbi.DataViewTable;
+import ThemeData = powerbi.ThemeColorData;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
+import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import "./../style/visual.less";
-import * as React from 'react';
-import AgGrid from './component/AgGrid';
-import {createRoot} from 'react-dom/client';
 import { State } from "./interfaces";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import {VisualSettings} from './settings'
+import Starter from './component/Starter'
+import DataViewer from './component/DataViewer';
+
+export interface ISelectionIdBuilder {
+    withMeasure(measureId: string): this;
+    withTable(table: DataViewTable, rowIndex: number): this;
+    createSelectionId(): ISelectionId;
+}
 
 
 export class Visual implements IVisual {
     private target: HTMLElement;
     private updateState: (newState: State) => void;
-
+    private visualSettings: VisualSettings; 
+    private formattingSettingsService : FormattingSettingsService;
+    private Theme : ThemeData;
+    private selectionManager;
+    private host : IVisualHost;
+    
     private state: State = {
         data: [],
         columns: []
     }
     constructor(options: VisualConstructorOptions) {
+        this.host = options.host;
+        this.formattingSettingsService = new FormattingSettingsService();
+        this.selectionManager = this.host.createSelectionManager();
         this.updateState = () => {
             this.state = {
                 data: [],
@@ -55,44 +73,36 @@ export class Visual implements IVisual {
         };
         this.target = options.element;
 
-        const reactRoot = React.createElement(AgGrid, {
-            updateCallback: (updateFunc : (newState : State)=> void)=>{
-                this.updateState = updateFunc;
-            }
-        });
+        // const reactRoot = React.createElement(AgGrid, {
+        //     updateCallback: (updateFunc : (newState : State)=> void)=>{
+        //         this.updateState = updateFunc;
+        //     }
+        // });
 
-        const root = createRoot(this.target);
-        root.render(reactRoot);
+        // const root = createRoot(this.target);
+        // root.render(reactRoot);
+        Starter(this.target);
         
     }
 
     public update(options: VisualUpdateOptions) {
-
         const dataView: DataView = options.dataViews[0];
-        if(dataView.table.rows && dataView.table.columns){
-            const columns = dataView.table.columns.map(col=>{
-                const obj: any = {};
-                obj['field'] = col.displayName;
-                return obj;
-            })
-            const data = dataView.table.rows.map(row => {
-                const obj: any = {};
-               
-                for(let i=0;i<row.length;i++){
-                    obj[`${dataView.table.columns[i].displayName}`] = row[i];
-                }
-               
-                return obj;
-            });
-    
-            this.state = {
-                data, columns
-            }
-
-            this.updateState(
-                this.state
-            )
-        }
+        this.visualSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualSettings, dataView);
         
+        const onRowClick = (rowIndex: any) => {
+            
+            const selection: ISelectionId = this.host.createSelectionIdBuilder()
+            .withTable(dataView.table, rowIndex)
+            .createSelectionId();
+
+            this.selectionManager.select(selection);
+        };
+
+        DataViewer(this.target,this.host, onRowClick, dataView, options.viewport, this.visualSettings);
+        
+    }
+    
+    public getFormattingModel(): powerbi.visuals.FormattingModel {
+        return this.formattingSettingsService.buildFormattingModel(this.visualSettings);
     }
 }
